@@ -1,16 +1,27 @@
-import os
-import openai
+from openai import OpenAI
 
-openai.api_key = os.getenv("OPENAI_API_KEY", "")
+MY_KEY = None
+
+# Load the API key from a file
+with open("OPENAI_API_KEY.txt", "r") as f:
+    MY_KEY = f.read().strip()
+
+client = OpenAI(
+        api_key=MY_KEY,  # Your API key here
+    )
 
 
 def get_openai_response(prompt):
-    response = openai.Completion.create(
-        model="text-davinci-003",
-        prompt=prompt,
-        max_tokens=50
+    chat_completion = client.chat.completions.create(
+        messages=[
+            {
+                "role": "user",
+                "content": prompt,
+            }
+        ],
+        model="gpt-4o",
     )
-    return response.choices[0].text.strip()
+    return chat_completion.choices[0].message.content
 
 
 def main():
